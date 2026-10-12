@@ -1,0 +1,46 @@
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: flutter
+
+trigger_map:
+  - push_branch: main
+    workflow: build
+  - pull_request_source_branch: '*'
+    workflow: build
+
+workflows:
+  build:
+    steps:
+      - git-clone@8: {}
+
+      - flutter-installer@0:
+          inputs:
+            - version: stable
+            - is_update: 'false'
+
+      - script@1:
+          title: Install Flutter dependencies
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                flutter pub get
+
+      - flutter-test@1:
+          inputs:
+            - project_location: '$BITRISE_FLUTTER_PROJECT_LOCATION'
+
+      - flutter-build@0:
+          inputs:
+            - project_location: '$BITRISE_FLUTTER_PROJECT_LOCATION'
+            - platform: android
+            - android_output_type: apk
+            - android_additional_params: '--debug'
+
+      - deploy-to-bitrise-io@2: {}
+
+app:
+  envs:
+    - BITRISE_FLUTTER_PROJECT_LOCATION: '.'
+      opts:
+        is_expand: false
