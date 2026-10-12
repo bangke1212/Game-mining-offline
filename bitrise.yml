@@ -15,7 +15,8 @@ workflows:
 
       - flutter-installer@0:
           inputs:
-            - version: stable
+            # Flutter 3.22.3 includes Dart 3.4.x and satisfies pubspec.yaml.
+            - version: 3.22.3
             - is_update: 'false'
 
       - script@1:
