@@ -2,18 +2,63 @@ workflows:
   hashhaven-android:
     name: HashHaven Android APK
     max_build_duration: 60
+
     environment:
       flutter: stable
+      java: 17
+      vars:
+        # Keep Gradle output and Flutter diagnostics readable in Codemagic logs.
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G"
+
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/wrapper
+
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
+
     scripts:
-      - name: Prepare Android project
-        script: flutter create --platforms=android .
+      - name: Configure Flutter SDK path
+        script: |
+          set -euo pipefail
+          mkdir -p "$CM_BUILD_DIR/android"
+          printf 'flutter.sdk=%s\n' "$FLUTTER_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+
+      - name: Check toolchain
+        script: |
+          set -euo pipefail
+          flutter --version
+          java -version
+          flutter doctor --verbose
+
       - name: Install dependencies
-        script: flutter pub get
+        script: |
+          set -euo pipefail
+          flutter pub get
+
       - name: Analyze Flutter project
-        script: flutter analyze --no-fatal-infos --no-fatal-warnings
-      - name: Run tests
-        script: flutter test
+        script: |
+          set -euo pipefail
+          flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run Flutter tests
+        script: |
+          set -euo pipefail
+          flutter test
+
       - name: Build debug APK
-        script: flutter build apk --debug
+        script: |
+          set -euo pipefail
+          flutter build apk --debug
+
     artifacts:
-      - build/app/outputs/flutter-apk/**/*.apk
+      - build/**/outputs/**/*.apk
