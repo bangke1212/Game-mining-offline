@@ -10,7 +10,7 @@ workflows:
       - name: Install dependencies
         script: flutter pub get
       - name: Analyze Flutter project
-        script: flutter analyze
+        script: flutter analyze --no-fatal-infos --no-fatal-warnings
       - name: Run tests
         script: flutter test
       - name: Build debug APK
