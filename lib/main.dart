@@ -276,11 +276,47 @@ class _FactoryScreenState extends State<FactoryScreen> with WidgetsBindingObserv
     ])),
   ]);
 
-  Widget _rail() => SizedBox(width: 112, child: Padding(padding: const EdgeInsets.all(8), child: Column(children: [
-    Text('LV ${state.level}', style: const TextStyle(fontWeight: FontWeight.w900)), const SizedBox(height: 16),
-    for (final item in const [(Icons.home_outlined, 'Factory'), (Icons.blur_on, 'Games'), (Icons.account_tree_outlined, 'Research'), (Icons.person_outline, 'Crew'), (Icons.auto_awesome, 'Events')])
-      Padding(padding: const EdgeInsets.only(bottom: 8), child: InkWell(onTap: () => setState(() => tab = 0), borderRadius: BorderRadius.circular(10), child: Container(width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 10), decoration: BoxDecoration(color: item.$2 == 'Factory' ? const Color(0xFF183C3B) : Colors.transparent, borderRadius: BorderRadius.circular(10)), child: Column(children: [Icon(item.$1, size: 18, color: item.$2 == 'Factory' ? mint : muted), const SizedBox(height: 3), Text(item.$2, style: TextStyle(fontSize: 9, color: item.$2 == 'Factory' ? mint : muted))])))),
-  ]));
+  Widget _rail() => SizedBox(
+    width: 112,
+    child: Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Text('LV ${state.level}', style: const TextStyle(fontWeight: FontWeight.w900)),
+          const SizedBox(height: 16),
+          for (final item in const [
+            (Icons.home_outlined, 'Factory'),
+            (Icons.blur_on, 'Games'),
+            (Icons.account_tree_outlined, 'Research'),
+            (Icons.person_outline, 'Crew'),
+            (Icons.auto_awesome, 'Events'),
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                onTap: () => setState(() => tab = 0),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: item.$2 == 'Factory' ? const Color(0xFF183C3B) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(item.$1, size: 18, color: item.$2 == 'Factory' ? mint : muted),
+                      const SizedBox(height: 3),
+                      Text(item.$2, style: TextStyle(fontSize: 9, color: item.$2 == 'Factory' ? mint : muted)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
 
   Widget _factoryContent({required bool portrait}) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [const Text('FACTORY / NEON GARAGE', style: TextStyle(color: mint, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.7)), const Spacer(), Text('+${state.productionPerMinute.toStringAsFixed(1)} / min', style: const TextStyle(color: muted, fontSize: 11))]),
@@ -339,11 +375,67 @@ class _FactoryScreenState extends State<FactoryScreen> with WidgetsBindingObserv
 
   void _playCoolingPanic() {
     int score = 0;
-    int target = 0;
+    int target = math.Random().nextInt(4);
     final random = math.Random();
-    showDialog<void>(context: context, barrierDismissible: false, builder: (dialogContext) => StatefulBuilder(builder: (context, update) {
-      target = target == 0 ? random.nextInt(4) : target;
-      return AlertDialog(backgroundColor: surface, title: const Text('COOLING PANIC'), content: Column(mainAxisSize: MainAxisSize.min, children: [const Text('Tap the glowing fan node before the heat spikes.', style: TextStyle(color: muted)), const SizedBox(height: 16), Text('Combo $score / 5', style: const TextStyle(color: mint, fontWeight: FontWeight.bold)), const SizedBox(height: 12), Wrap(spacing: 10, runSpacing: 10, children: List.generate(4, (index) => SizedBox(width: 82, height: 54, child: ElevatedButton(onPressed: () { if (index == target) { score++; target = random.nextInt(4); update(() {}); if (score >= 5) { Navigator.pop(dialogContext); setState(() { state.credits += 650; state.temperature = math.max(18, state.temperature - 12); state.completedRuns++; state.xp += 250; }); _save(); _toast('Cooling Panic cleared — +650 Credits'); } } else { update(() => score = math.max(0, score - 1)); } }, style: ElevatedButton.styleFrom(backgroundColor: index == target ? mint : elevated, foregroundColor: index == target ? const Color(0xFF07131B) : Colors.white), child: Icon(index == target ? Icons.bolt : Icons.circle_outlined)))),)])), actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('PAUSE / EXIT'))]);
-    }));
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, update) {
+          return AlertDialog(
+            backgroundColor: surface,
+            title: const Text('COOLING PANIC'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Tap the glowing fan node before the heat spikes.', style: TextStyle(color: muted)),
+                const SizedBox(height: 16),
+                Text('Combo $score / 5', style: const TextStyle(color: mint, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(4, (index) {
+                    return SizedBox(
+                      width: 82,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (index != target) {
+                            update(() => score = math.max(0, score - 1));
+                            return;
+                          }
+                          score += 1;
+                          target = random.nextInt(4);
+                          update(() {});
+                          if (score < 5) return;
+                          Navigator.pop(dialogContext);
+                          setState(() {
+                            state.credits += 650;
+                            state.temperature = math.max(18.0, state.temperature - 12);
+                            state.completedRuns += 1;
+                            state.xp += 250;
+                          });
+                          _save();
+                          _toast('Cooling Panic cleared — +650 Credits');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: index == target ? mint : elevated,
+                          foregroundColor: index == target ? const Color(0xFF07131B) : Colors.white,
+                        ),
+                        child: Icon(index == target ? Icons.bolt : Icons.circle_outlined),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('PAUSE / EXIT')),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

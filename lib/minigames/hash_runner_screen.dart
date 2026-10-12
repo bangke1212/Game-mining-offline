@@ -390,15 +390,33 @@ class _HashRunnerScreenState extends State<HashRunnerScreen> with WidgetsBinding
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [for (var column = 0; column < HashRunnerController.columnsPerPattern; column++) _columnDot(column)]),
       ]));
 
-  Widget _laneColumn(int lane) => Column(children: [
-        Expanded(child: Container(decoration: BoxDecoration(color: const Color(0xFF0C1322), borderRadius: BorderRadius.circular(12), border: Border.all(color: lane == controller.targetLane ? _mint.withOpacity(.65) : _line))), child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(lane == controller.targetLane ? Icons.bolt : Icons.circle_outlined, color: lane == controller.targetLane ? _mint : _line, size: 34),
-          const SizedBox(height: 8), Text('LANE ${lane + 1}', style: TextStyle(color: lane == controller.targetLane ? _mint : _muted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-          if (lane == controller.targetLane) const Padding(padding: EdgeInsets.only(top: 6), child: Text('TARGET', style: TextStyle(color: _mint, fontSize: 9, fontWeight: FontWeight.bold))),
-        ])))),
-        const SizedBox(height: 8),
-        AnimatedContainer(duration: const Duration(milliseconds: 160), height: 7, decoration: BoxDecoration(color: lane == controller.targetLane ? _mint : _elevated, borderRadius: BorderRadius.circular(99))),
-      ]);
+  Widget _laneColumn(int lane) => Column(
+    children: [
+      Expanded(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0C1322),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: lane == controller.targetLane ? _mint.withOpacity(.65) : _line),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(lane == controller.targetLane ? Icons.bolt : Icons.circle_outlined, color: lane == controller.targetLane ? _mint : _line, size: 34),
+                const SizedBox(height: 8),
+                Text('LANE ${lane + 1}', style: TextStyle(color: lane == controller.targetLane ? _mint : _muted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                if (lane == controller.targetLane)
+                  const Padding(padding: EdgeInsets.only(top: 6), child: Text('TARGET', style: TextStyle(color: _mint, fontSize: 9, fontWeight: FontWeight.bold))),
+              ],
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      AnimatedContainer(duration: const Duration(milliseconds: 160), height: 7, decoration: BoxDecoration(color: lane == controller.targetLane ? _mint : _elevated, borderRadius: BorderRadius.circular(99))),
+    ],
+  );
 
   Widget _columnDot(int column) {
     final active = column == controller.currentColumn;
