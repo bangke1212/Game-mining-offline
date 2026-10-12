@@ -13,11 +13,20 @@ workflows:
     steps:
       - git-clone@8: {}
 
-      - flutter-installer@0:
+      - flutter-installer@1:
           inputs:
             # Flutter 3.22.3 includes Dart 3.4.x and satisfies pubspec.yaml.
             - version: 3.22.3
-            - is_update: 'false'
+
+      - script@1:
+          title: Verify Flutter and Dart versions
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                flutter --version
+                dart --version 2>&1 | tee /tmp/dart-version.txt
+                grep -Eq 'Dart SDK version: 3\.(3|[4-9]|[1-9][0-9])\.' /tmp/dart-version.txt
 
       - script@1:
           title: Install Flutter dependencies
