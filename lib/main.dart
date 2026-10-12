@@ -346,12 +346,63 @@ class _FactoryScreenState extends State<FactoryScreen> with WidgetsBindingObserv
 
   Widget _temperatureCard() {
     final critical = state.temperature >= 90;
-    return _panel(border: Border.all(color: critical ? coral : amber), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [Text(critical ? '⚠ CRITICAL HEAT' : '⚠ TEMPERATURE', style: TextStyle(color: critical ? coral : amber, fontWeight: FontWeight.bold, fontSize: 11)), const Spacer(), Text('${state.temperature.round()}°C / 70°C', style: const TextStyle(color: muted, fontSize: 11))]), const SizedBox(height: 8), _bar((state.temperature / 100).clamp(0, 1).toDouble(), color: critical ? coral : amber), const SizedBox(height: 6), Row(children: [Expanded(child: Text(critical ? 'Rigs slowing down — cool now.' : 'Healthy · keep the rigs below the redline.', style: const TextStyle(color: muted, fontSize: 11))), TextButton(onPressed: _coolDown, child: const Text('COOL DOWN'))])])));
+    return _panel(
+      border: Border.all(color: critical ? coral : amber),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Text(critical ? '⚠ CRITICAL HEAT' : '⚠ TEMPERATURE', style: TextStyle(color: critical ? coral : amber, fontWeight: FontWeight.bold, fontSize: 11)),
+            const Spacer(),
+            Text('${state.temperature.round()}°C / 70°C', style: const TextStyle(color: muted, fontSize: 11)),
+          ]),
+          const SizedBox(height: 8),
+          _bar((state.temperature / 100).clamp(0, 1).toDouble(), color: critical ? coral : amber),
+          const SizedBox(height: 6),
+          Row(children: [
+            Expanded(child: Text(critical ? 'Rigs slowing down — cool now.' : 'Healthy · keep the rigs below the redline.', style: const TextStyle(color: muted, fontSize: 11))),
+            TextButton(onPressed: _coolDown, child: const Text('COOL DOWN')),
+          ]),
+        ],
+      ),
+    );
   }
 
   Widget _quickRun() => _panel(border: Border.all(color: const Color(0xFF344073)), child: Row(children: [const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('QUICK RUN', style: TextStyle(fontWeight: FontWeight.bold)), SizedBox(height: 5), Text('Hash Runner · route the signal', style: TextStyle(color: muted, fontSize: 11))])), TextButton(onPressed: _openHashRunner, style: TextButton.styleFrom(backgroundColor: violet, foregroundColor: Colors.white), child: const Text('PLAY NOW'))]));
 
-  Widget _readout() => SizedBox(width: 218, child: Padding(padding: const EdgeInsets.fromLTRB(12, 16, 14, 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LIVE READOUT', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)), const SizedBox(height: 12), _metric('HASH POWER', '${state.hashPower.toStringAsFixed(2)} TH/s', '+${state.productionPerMinute.toStringAsFixed(1)} / min'), const SizedBox(height: 8), _panel(border: Border.all(color: amber), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('TEMPERATURE', style: TextStyle(color: muted, fontSize: 10)), const SizedBox(height: 5), Text('${state.temperature.round()}°C / 70°C', style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, fontSize: 18)), const SizedBox(height: 8), _bar((state.temperature / 100).clamp(0, 1).toDouble(), color: amber)])), const SizedBox(height: 8), Row(children: [Expanded(child: _metric('ENERGY', '${state.energy.round()} / 100', '')), const SizedBox(width: 7), Expanded(child: _metric('XP', state.xp.round().toString(), ''))]), const Spacer(), SizedBox(width: double.infinity, child: ElevatedButton(onPressed: _mineNow, style: ElevatedButton.styleFrom(backgroundColor: mint, foregroundColor: const Color(0xFF07131B), minimumSize: const Size.fromHeight(44)), child: const Text('COLLECT'))])));
+  Widget _readout() => SizedBox(
+    width: 218,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(12, 16, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('LIVE READOUT', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+          const SizedBox(height: 12),
+          _metric('HASH POWER', '${state.hashPower.toStringAsFixed(2)} TH/s', '+${state.productionPerMinute.toStringAsFixed(1)} / min'),
+          const SizedBox(height: 8),
+          _panel(
+            border: Border.all(color: amber),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('TEMPERATURE', style: TextStyle(color: muted, fontSize: 10)),
+              const SizedBox(height: 5),
+              Text('${state.temperature.round()}°C / 70°C', style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 8),
+              _bar((state.temperature / 100).clamp(0, 1).toDouble(), color: amber),
+            ]),
+          ),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(child: _metric('ENERGY', '${state.energy.round()} / 100', '')),
+            const SizedBox(width: 7),
+            Expanded(child: _metric('XP', state.xp.round().toString(), '')),
+          ]),
+          const Spacer(),
+          SizedBox(width: double.infinity, child: ElevatedButton(onPressed: _mineNow, style: ElevatedButton.styleFrom(backgroundColor: mint, foregroundColor: const Color(0xFF07131B), minimumSize: const Size.fromHeight(44)), child: const Text('COLLECT'))),
+        ],
+      ),
+    ),
+  );
 
   Widget _metric(String label, String value, String sub) => _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: muted, fontSize: 10)), const SizedBox(height: 5), Text(value, style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, fontSize: 18)), if (sub.isNotEmpty) Text(sub, style: const TextStyle(color: mint, fontSize: 10))]));
 

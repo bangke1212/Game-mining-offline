@@ -424,9 +424,28 @@ class _HashRunnerScreenState extends State<HashRunnerScreen> with WidgetsBinding
     return Container(width: 13, height: 6, margin: const EdgeInsets.symmetric(horizontal: 3), decoration: BoxDecoration(color: active ? _mint : passed ? _violet : _line, borderRadius: BorderRadius.circular(99)));
   }
 
-  Widget _laneControls({required bool landscape}) => Row(children: [
-        for (var lane = 0; lane < HashRunnerController.laneCount; lane++) Expanded(child: Padding(padding: EdgeInsets.only(left: lane == 0 ? 0 : 4, right: lane == HashRunnerController.laneCount - 1 ? 0 : 4), child: SizedBox(height: landscape ? 52 : 58, child: ElevatedButton(onPressed: () => _tapLane(lane), style: ElevatedButton.styleFrom(backgroundColor: lane == controller.targetLane ? _mint : _elevated, foregroundColor: lane == controller.targetLane ? const Color(0xFF07131B) : Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), child: Text('${lane + 1}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900))))),
-      ]);
+  Widget _laneControls({required bool landscape}) => Row(
+    children: [
+      for (var lane = 0; lane < HashRunnerController.laneCount; lane++)
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: lane == 0 ? 0 : 4, right: lane == HashRunnerController.laneCount - 1 ? 0 : 4),
+            child: SizedBox(
+              height: landscape ? 52 : 58,
+              child: ElevatedButton(
+                onPressed: () => _tapLane(lane),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: lane == controller.targetLane ? _mint : _elevated,
+                  foregroundColor: lane == controller.targetLane ? const Color(0xFF07131B) : Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: Text('${lane + 1}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+              ),
+            ),
+          ),
+        ),
+    ],
+  );
 
   Widget _pauseBanner() => _card(color: const Color(0xFF211D37), child: Row(children: [const Icon(Icons.pause_circle_outline, color: _violet), const SizedBox(width: 9), const Expanded(child: Text('RUN PAUSED', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))), TextButton(onPressed: _togglePause, child: const Text('RESUME'))]));
 
